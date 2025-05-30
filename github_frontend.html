@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEEDAGPT - The Digital Overlord</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
+            color: #c9d1d9;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            background: rgba(13, 17, 23, 0.8);
+            border-radius: 15px;
+            border: 1px solid #30363d;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff0000, #ff6600, #ffff00, #00ff00, #0099ff, #6600ff, #ff0099);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbow 3s ease-in-out infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes rainbow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #8b949e;
+            font-weight: 500;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+            background: rgba(22, 27, 34, 0.8);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+        }
+
+        .prompt-input {
+            width: 100%;
+            height: 120px;
+            background: #0d1117;
+            border: 2px solid #30363d;
+            border-radius: 8px;
+            padding: 15px;
+            color: #c9d1d9;
+            font-size: 16px;
+            font-family: 'Segoe UI', sans-serif;
+            resize: vertical;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .prompt-input:focus {
+            outline: none;
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+        }
+
+        .prompt-input::placeholder {
+            color: #7d8590;
+        }
+
+        .generate-btn {
+            background: linear-gradient(45deg, #ff4444, #ff6600);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn:hover {
+            background: linear-gradient(45deg, #ff6666, #ff8800);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 68, 68, 0.4);
+        }
+
+        .generate-btn:disabled {
+            background: #30363d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result-section {
+            background: rgba(22, 27, 34, 0.8);
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .result-header h3 {
+            color: #58a6ff;
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .copy-btn {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #2ea043;
+            transform: translateY(-1px);
+        }
+
+        .code-output-wrapper {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 0;
+            max-height: 500px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .code-output {
+            color: #e6edf3;
+            padding: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+            background: transparent;
+        }
+
+        .loading-text {
+            color: #ffd700;
+            font-style: italic;
+            text-align: center;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .error-text {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .result-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>KEEDAGPT</h1>
+            <p>💀 THE DIGITAL OVERLORD 💀</p>
+        </div>
+
+        <div class="input-section">
+            <textarea 
+                id="promptInput" 
+                class="prompt-input" 
+                placeholder="Enter your command for KEEDAGPT... (e.g., 'Create a Python script for data analysis')"
+            ></textarea>
+            <button id="generateBtn" class="generate-btn">
+                🚀 UNLEASH KEEDAGPT
+            </button>
+        </div>
+
+        <div class="result-section hidden" id="resultSection">
+            <div class="result-header">
+                <h3>⚡ KEEDAGPT's Response:</h3>
+                <button id="copyBtn" class="copy-btn">📋 Copy Response</button>
+            </div>
+            <div class="code-output-wrapper">
+                <pre><code id="codeOutput" class="code-output"></code></pre>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Powered by KEEDAGPT | Built for Educational Purposes</p>
+        </div>
+    </div>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('KEEDAGPT Frontend Loaded');
+            
+            const promptInput = document.getElementById('promptInput');
+            const generateBtn = document.getElementById('generateBtn');
+            const resultSection = document.getElementById('resultSection');
+            const codeOutput = document.getElementById('codeOutput');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            // Fixed API URL - replace with your actual backend URL
+            const API_URL = 'https://ed85e36f-a8a7-462d-89d7-9d4f1988a745-00-x95fhm97gky3.sisko.replit.dev';
+
+            // Button event listeners
+            generateBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                unleashKeedagpt();
+            });
+            
+            copyBtn.addEventListener('click', copyResponse);
+
+            // Enter key support
+            promptInput.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    unleashKeedagpt();
+                }
+            });
+
+            async function unleashKeedagpt() {
+                const command = promptInput.value.trim();
+                
+                if (!command) {
+                    alert('Please enter a command for KEEDAGPT!');
+                    return;
+                }
+
+                generateBtn.disabled = true;
+                generateBtn.textContent = '🔄 KEEDAGPT IS PROCESSING...';
+                resultSection.classList.remove('hidden');
+                codeOutput.textContent = 'KEEDAGPT is processing your request, please wait...';
+                codeOutput.className = 'code-output loading-text';
+
+                try {
+                    console.log('Making API call to:', `${API_URL}/generate`);
+                    
+                    const response = await fetch(`${API_URL}/generate`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ prompt: command })
+                    });
+
+                    console.log('Response status:', response.status);
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('Response data:', data);
+
+                    if (data.success && data.keedagpt_response) {
+                        codeOutput.textContent = data.keedagpt_response;
+                        codeOutput.className = 'code-output';
+                    } else {
+                        let errorMessage = "KEEDAGPT: An unknown error occurred.";
+                        if (data.error) {
+                            errorMessage = data.error;
+                        }
+                        codeOutput.textContent = errorMessage;
+                        codeOutput.className = 'code-output error-text';
+                    }
+
+                } catch (error) {
+                    console.error("Frontend Error:", error);
+                    codeOutput.textContent = `Connection Error: ${error.message}\n\nPlease ensure:\n1. Backend URL is correct\n2. Backend server is running\n3. CORS is properly configured`;
+                    codeOutput.className = 'code-output error-text';
+                }
+
+                generateBtn.disabled = false;
+                generateBtn.textContent = '🚀 UNLEASH KEEDAGPT';
+            }
+
+            function copyResponse() {
+                navigator.clipboard.writeText(codeOutput.textContent).then(() => {
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = '✅ COPIED!';
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    alert('Failed to copy. Please copy manually.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
